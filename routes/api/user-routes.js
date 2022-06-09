@@ -28,6 +28,14 @@ router.get('/:id', (req, res) => {
               attributes: ['title'],
               through: Vote,
               as: 'voted_posts'
+            },
+            {
+                model: Comment,
+                attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                include: {
+                  model: User,
+                  attributes: ['username']
+                }
             }
         ],
         where: {
