@@ -87,8 +87,8 @@ router.get('/post/:id', (req, res) => {
           // pass data to template
           res.render('single-post', { 
             post, 
-            loggedIn: res.session.loggedIn
-            });
+            loggedIn: req.session.loggedIn
+            })
         })
         .catch(err => {
           console.log(err);
