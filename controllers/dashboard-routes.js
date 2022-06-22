@@ -1,19 +1,19 @@
 const router = require('express').Router();
 const sequelize = require('../config/connection');
 const { Post, User, Comment } = require('../models');
-const dashboardRoutes = require('./dashboard-routes.js');
+const withAuth = require('../utils/auth');
 
-router.use('/dashboard', dashboardRoutes);
-
-router.get('/', (req, res) => {
-    console.log(req.session);
+router.get('/', withAuth, (req, res) => {
     Post.findAll({
+        where: {
+            user_id: req.session.user_id
+        },
         attributes: [
-          'id',
-          'post_url',
-          'title',
-          'created_at',
-          [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
+            'id',
+            'post_url',
+            'title',
+            'created_at',
+            [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
         ],
         include: [
             {
@@ -32,26 +32,16 @@ router.get('/', (req, res) => {
     })
     .then(dbPostData => {
         const posts = dbPostData.map(post => post.get({ plain: true }));
-        res.render('homepage', { 
-            posts,
-            loggedIn: req.session.loggedIn });
-    }) 
+        res.render('dashboard', { posts, loggedIn: true });
+    })
     .catch(err => {
         console.log(err);
         res.status(500).json(err);
     });
 });
 
-router.get('/login', (req, res) => {
-    if (req.session.loggedIn) {
-        res.redirect('/');
-        return;
-    }
-
-    res.render('login');
-});
-
-router.get('/post/:id', (req, res) => {
+router.get('/edit/:id', withAuth, (req, res) => {
+    //get the post to edit
     Post.findOne({
         where: {
           id: req.params.id
@@ -84,19 +74,18 @@ router.get('/post/:id', (req, res) => {
             return;
           }
     
-          // serialize the data
+          // serialize!
           const post = dbPostData.get({ plain: true });
     
-          // pass data to template
-          res.render('single-post', { 
+          res.render('edit-post', { 
             post, 
-            loggedIn: req.session.loggedIn
+            loggedIn: true
             })
         })
         .catch(err => {
           console.log(err);
           res.status(500).json(err);
-        });
+        })
 });
 
 module.exports = router;

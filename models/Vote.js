@@ -11,7 +11,6 @@ Vote.init(
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
-            // ***allowNull false? Why do we not need it here?
         },
         user_id: {
             type: DataTypes.INTEGER,
