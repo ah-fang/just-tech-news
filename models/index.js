@@ -23,21 +23,20 @@ Post.belongsToMany(User, {
     as: 'voted_posts',
     foreignKey: 'post_id'
 });
-//ask about belongsTo vs hasOne for Post 
 
 Comment.belongsTo(User, {
     foreignKey: 'user_id'
 });
   
-  Comment.belongsTo(Post, {
+Comment.belongsTo(Post, {
     foreignKey: 'post_id'
 });
   
-  User.hasMany(Comment, {
+User.hasMany(Comment, {
     foreignKey: 'user_id'
 });
   
-  Post.hasMany(Comment, {
+Post.hasMany(Comment, {
     foreignKey: 'post_id'
 });
 
